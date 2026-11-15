@@ -1,7 +1,83 @@
 <UserControl x:Class="UnoCockpit.Views.Apps.TripHudView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Border Style="{StaticResource CockpitCardStyle}">
-    <TextBlock Style="{StaticResource CockpitBodyStyle}" Text="TripHudView" />
-  </Border>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:apps="using:UnoCockpit.Views.Apps"
+             xmlns:drawing="using:UnoCockpit.Views.Drawing">
+  <Grid ColumnSpacing="16" RowSpacing="16">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- Trip stats -->
+    <Border Grid.ColumnSpan="2" Padding="24,16" Style="{StaticResource CockpitCardStyle}">
+      <Grid ColumnSpacing="24">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+          <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="Distance" />
+          <TextBlock AutomationProperties.AutomationId="TripDistance" Style="{StaticResource CockpitValueStyle}" Text="{x:Bind ViewModel.DistanceText, Mode=OneWay}" />
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+          <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="Time" />
+          <TextBlock Style="{StaticResource CockpitValueStyle}" Text="{x:Bind ViewModel.ElapsedText, Mode=OneWay}" />
+        </StackPanel>
+        <StackPanel Grid.Column="2">
+          <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="Average" />
+          <TextBlock Style="{StaticResource CockpitValueStyle}" Text="{x:Bind ViewModel.AverageText, Mode=OneWay}" />
+        </StackPanel>
+        <StackPanel Grid.Column="3">
+          <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="Altitude" />
+          <TextBlock Style="{StaticResource CockpitValueStyle}" Text="{x:Bind ViewModel.AltitudeText, Mode=OneWay}" />
+        </StackPanel>
+        <Button Grid.Column="4"
+                VerticalAlignment="Center"
+                AutomationProperties.AutomationId="TripUnits"
+                AutomationProperties.Name="Switch units"
+                Command="{x:Bind ViewModel.ToggleUnitsCommand}"
+                Content="{x:Bind ViewModel.UnitLabel, Mode=OneWay}"
+                Style="{StaticResource CockpitPillButtonStyle}" />
+      </Grid>
+    </Border>
+
+    <!-- Heading -->
+    <Border Grid.Row="1" Padding="16" Style="{StaticResource CockpitCardStyle}">
+      <Grid>
+        <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="Heading" />
+        <drawing:CompassRose Margin="0,24,0,0" HeadingDeg="{x:Bind ViewModel.HeadingDeg, Mode=OneWay}" />
+        <StackPanel Margin="0,24,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <TextBlock HorizontalAlignment="Center" Style="{StaticResource CockpitTitleStyle}" Text="{x:Bind apps:TripHudView.Cardinal(ViewModel.HeadingDeg), Mode=OneWay}" />
+          <TextBlock HorizontalAlignment="Center" Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind apps:TripHudView.Degrees(ViewModel.HeadingDeg), Mode=OneWay}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- G-forces -->
+    <Border Grid.Row="1" Grid.Column="1" Padding="16" Style="{StaticResource CockpitCardStyle}">
+      <Grid>
+        <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="G-force" />
+        <TextBlock HorizontalAlignment="Right" Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind apps:TripHudView.GText(ViewModel.G), Mode=OneWay}" />
+        <drawing:FrictionCircle Margin="0,24,0,0" G="{x:Bind ViewModel.G, Mode=OneWay}" />
+      </Grid>
+    </Border>
+
+    <!-- Path -->
+    <Border Grid.Row="2" Grid.ColumnSpan="2" Padding="16" Style="{StaticResource CockpitCardStyle}">
+      <Grid>
+        <drawing:BreadcrumbCanvas x:Name="Breadcrumbs" />
+        <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="This trip" />
+        <TextBlock HorizontalAlignment="Right" Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind apps:TripHudView.AccuracyText(ViewModel.AccuracyM), Mode=OneWay}" />
+      </Grid>
+    </Border>
+  </Grid>
 </UserControl>
