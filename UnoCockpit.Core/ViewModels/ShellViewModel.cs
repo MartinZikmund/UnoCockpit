@@ -30,9 +30,11 @@ public sealed partial class ShellViewModel : ObservableObject
     private GeoSample? _lastFix;
     private DateTimeOffset _now = DateTimeOffset.UtcNow;
     private double? _temperatureC;
+    private readonly TimeZoneInfo _timeZone;
 
-    public ShellViewModel(ICameraSource camera, IMicSource mic, ICapabilityProbe probe, IKeyValueStore store, bool metric)
+    public ShellViewModel(ICameraSource camera, IMicSource mic, ICapabilityProbe probe, IKeyValueStore store, bool metric, TimeZoneInfo? timeZone = null)
     {
+        _timeZone = timeZone ?? TimeZoneInfo.Local;
         Trip = new(metric);
         Arcade = new(seed => new ChargeRunGame(seed), store);
         Photo = new(camera, CreatePostcard);
@@ -182,7 +184,7 @@ public sealed partial class ShellViewModel : ObservableObject
     public void OnClock(DateTimeOffset now)
     {
         _now = now;
-        ClockText = now.ToLocalTime().ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+        ClockText = TimeZoneInfo.ConvertTime(now, _timeZone).ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture);
         UpdateTheme();
     }
 
@@ -201,8 +203,15 @@ public sealed partial class ShellViewModel : ObservableObject
         Trip.Refresh(_tracker, _g.Current);
     }
 
+    // Real GPS: follow the sun where the car is. Demo or no fix: the demo location isn't where the user is,
+    // so fall back to the local clock.
     private void UpdateTheme() =>
-        IsDark = ThemeOverrideDark ?? (_lastFix is not { } fix || !SunCalculator.IsDaylight(_now, fix.Latitude, fix.Longitude));
+        IsDark = ThemeOverrideDark ?? (_lastFix is { } fix && !IsDemo
+            ? !SunCalculator.IsDaylight(_now, fix.Latitude, fix.Longitude)
+            : TimeZoneInfo.ConvertTime(_now, _timeZone).Hour is < DayStartsHour or >= NightStartsHour);
+
+    private const int DayStartsHour = 7;
+    private const int NightStartsHour = 19;
 
     private PostcardData CreatePostcard() => new(
         _lastFix is { } fix ? UnitsFormatter.Coordinates(fix.Latitude, fix.Longitude) : "Somewhere on the road",
