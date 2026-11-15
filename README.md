@@ -47,7 +47,7 @@ No GPS? If location is denied or unavailable (say, on your laptop), the app play
 | Camera | Photo Booth | `getUserMedia` into a native `<video>` hosted by Uno's `BrowserHtmlElement` | Parked, AMD Ryzen cars, software 2026.26+ |
 | Microphone | Cabin Sound | `getUserMedia` + Web Audio `AnalyserNode` | Same requirements as the camera |
 | Motion | Trip G-forces | `devicemotion` | Used only when real data arrives; otherwise G-forces are derived from GPS |
-| Speech | Voice commands | Web Speech API | Button only appears when supported |
+| Speech | Voice commands | Web Speech API | Button only appears when supported. Chromium's recognizer sends audio to an online speech service, so it only listens after you tap the mic |
 | Audio out | Game sound effects | Web Audio oscillators | No audio files shipped |
 | Network, fullscreen, wake lock, WebGL, CPU, memory | Sensor Lab, status bar | Browser APIs | |
 

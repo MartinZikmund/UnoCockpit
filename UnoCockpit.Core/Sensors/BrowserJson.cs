@@ -70,7 +70,7 @@ public static partial class BrowserJson
             Flag(p, "mediaDevices", "camera", "Camera", CameraRequirementShort, CameraRequirementShort),
             Flag(p, "mediaDevices", "microphone", "Microphone", CameraRequirementShort, CameraRequirementShort),
             Flag(p, "deviceMotion", "motion", "Motion sensors", "Waiting for motion data", "No accelerometer exposed; G-forces come from GPS"),
-            Flag(p, "speech", "speech", "Voice commands", "Say \"open arcade\"", "No speech recognition in this browser"),
+            Flag(p, "speech", "speech", "Voice commands", "Uses the browser's speech service, which may process audio online", "No speech recognition in this browser"),
             new("network", "Network", Bool(p, "online") ? CapabilityStatus.Available : CapabilityStatus.Unsupported,
                 Str(p, "connectionType") is { } type ? $"Online · {type}" : "Online"),
             Flag(p, "battery", "battery", "Battery API", "Exposed (reports the computer, not the car)", "Not exposed"),
