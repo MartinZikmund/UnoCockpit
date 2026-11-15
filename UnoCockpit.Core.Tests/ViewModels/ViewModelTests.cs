@@ -54,6 +54,20 @@ public sealed class ShellViewModelTests
     }
 
     [TestMethod]
+    public void TransientTimeout_WhileDriving_StaysMoving()
+    {
+        ShellViewModel vm = Create();
+        vm.OnClock(T0);
+        vm.OnLocation(Fix(T0, 25), isDemo: false);
+        vm.OnClock(T0.AddSeconds(1));
+        vm.OnLocation(Fix(T0.AddSeconds(1), 25), isDemo: false);
+
+        vm.OnLocation(LocationResult.Failed(LocationStatus.Timeout), isDemo: false);
+
+        Assert.AreEqual(ParkState.Moving, vm.ParkState);
+    }
+
+    [TestMethod]
     public void NoFix_ForcesParked()
     {
         ShellViewModel vm = Create();
