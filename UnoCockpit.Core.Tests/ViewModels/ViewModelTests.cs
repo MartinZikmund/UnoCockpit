@@ -12,7 +12,7 @@ public sealed class ShellViewModelTests
     private static readonly DateTimeOffset T0 = new(2026, 11, 15, 11, 0, 0, TimeSpan.Zero);
 
     internal static ShellViewModel Create(FakeCamera? camera = null, FakeMic? mic = null) =>
-        new(camera ?? new FakeCamera(), mic ?? new FakeMic(), new FakeProbe(), new FakeStore(), metric: true);
+        new(camera ?? new FakeCamera(), mic ?? new FakeMic(), new FakeProbe(), new FakeStore(), metric: true, TimeZoneInfo.Utc);
 
     private static LocationResult Fix(DateTimeOffset t, double speed, double lat = 50.0755, double lon = 14.4378) =>
         new(LocationStatus.Ok, new GeoSample(t, lat, lon, 200, 5, speed, 90));
@@ -171,6 +171,20 @@ public sealed class ShellViewModelTests
 
         vm.DismissDemoBannerCommand.Execute(null);
         Assert.IsFalse(vm.IsDemoBannerVisible);
+    }
+
+    [TestMethod]
+    public void DemoMode_ThemeFollowsLocalClock_NotDemoLocation()
+    {
+        ShellViewModel vm = Create();
+        // San Francisco is at night at 12:00 UTC, but the user's local clock (UTC here) says midday.
+        vm.OnLocation(Fix(T0, 0, 37.7694, -122.4862), isDemo: true);
+
+        vm.OnClock(new DateTimeOffset(2026, 11, 15, 12, 0, 0, TimeSpan.Zero));
+        Assert.IsFalse(vm.IsDark);
+
+        vm.OnClock(new DateTimeOffset(2026, 11, 15, 21, 0, 0, TimeSpan.Zero));
+        Assert.IsTrue(vm.IsDark);
     }
 
     [TestMethod]
