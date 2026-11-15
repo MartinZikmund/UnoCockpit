@@ -36,7 +36,16 @@ public sealed partial class PhotoBoothViewModel(ICameraSource camera, Func<Postc
         }
 
         HasPostcard = false;
-        Status = await camera.StartAsync(videoElementId);
+        CapabilityStatus status = await camera.StartAsync(videoElementId);
+        if (_park != ParkState.Parked)
+        {
+            // The permission prompt was answered after the car pulled away.
+            camera.Stop();
+            Status = CapabilityStatus.RequiresPark;
+            return;
+        }
+
+        Status = status;
         IsPreviewing = Status == CapabilityStatus.Active;
     }
 

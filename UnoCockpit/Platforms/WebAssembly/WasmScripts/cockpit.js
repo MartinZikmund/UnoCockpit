@@ -26,6 +26,7 @@ globalThis.Cockpit = (function () {
 
     // ---------- Camera ----------
     var cameraStream = null;
+    var cameraGeneration = 0;
     globalThis.__cockpitCameraActive = false;
 
     function mediaErrorToStatus(e) {
@@ -38,10 +39,17 @@ globalThis.Cockpit = (function () {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { return "unsupported"; }
         try {
             mediaStopCamera();
-            cameraStream = await navigator.mediaDevices.getUserMedia({
+            var generation = cameraGeneration;
+            var stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
                 audio: false
             });
+            // Stopped while the permission prompt was open: don't resurrect the stream.
+            if (generation !== cameraGeneration) {
+                stream.getTracks().forEach(function (t) { t.stop(); });
+                return "stopped";
+            }
+            cameraStream = stream;
             var video = document.getElementById(videoElementId);
             if (video) {
                 video.srcObject = cameraStream;
@@ -55,6 +63,7 @@ globalThis.Cockpit = (function () {
     }
 
     function mediaStopCamera() {
+        cameraGeneration++;
         if (cameraStream) {
             cameraStream.getTracks().forEach(function (t) { t.stop(); });
             cameraStream = null;
@@ -79,13 +88,19 @@ globalThis.Cockpit = (function () {
 
     // ---------- Microphone ----------
     var mic = null;
+    var micGeneration = 0;
     globalThis.__cockpitMicActive = false;
 
     async function mediaStartMic() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { return "unsupported"; }
         try {
             mediaStopMic();
+            var generation = micGeneration;
             var stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false }, video: false });
+            if (generation !== micGeneration) {
+                stream.getTracks().forEach(function (t) { t.stop(); });
+                return "stopped";
+            }
             var context = new (globalThis.AudioContext || globalThis.webkitAudioContext)();
             var analyser = context.createAnalyser();
             analyser.fftSize = 2048;
@@ -104,6 +119,7 @@ globalThis.Cockpit = (function () {
     }
 
     function mediaStopMic() {
+        micGeneration++;
         if (mic) {
             mic.stream.getTracks().forEach(function (t) { t.stop(); });
             mic.context.close();

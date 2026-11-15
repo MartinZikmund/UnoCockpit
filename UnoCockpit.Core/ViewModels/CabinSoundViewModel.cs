@@ -52,7 +52,16 @@ public sealed partial class CabinSoundViewModel(IMicSource mic) : ObservableObje
             return;
         }
 
-        Status = await mic.StartAsync();
+        CapabilityStatus status = await mic.StartAsync();
+        if (_park != ParkState.Parked)
+        {
+            // The permission prompt was answered after the car pulled away.
+            mic.Stop();
+            Status = CapabilityStatus.RequiresPark;
+            return;
+        }
+
+        Status = status;
         IsListening = Status == CapabilityStatus.Active;
     }
 
