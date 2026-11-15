@@ -176,6 +176,22 @@ public sealed class PhotoBoothViewModelTests
     }
 
     [TestMethod]
+    public async Task PromptAnsweredAfterDrivingOff_StopsCamera()
+    {
+        FakeCamera cam = new() { Prompt = new() };
+        PhotoBoothViewModel vm = Parked(cam);
+        Task start = vm.StartCommand.ExecuteAsync("video-1");
+
+        vm.OnParkStateChanged(ParkState.Moving);
+        cam.Prompt.SetResult();
+        await start;
+
+        Assert.IsFalse(cam.IsActive);
+        Assert.IsFalse(vm.IsPreviewing);
+        Assert.AreEqual(CapabilityStatus.RequiresPark, vm.Status);
+    }
+
+    [TestMethod]
     public async Task Start_WhileMoving_DoesNotStartCamera()
     {
         FakeCamera cam = new();
@@ -236,6 +252,23 @@ public sealed class CabinSoundViewModelTests
         vm.OnParkStateChanged(ParkState.Moving);
 
         Assert.AreEqual(1, mic.StopCalls);
+        Assert.IsFalse(vm.IsListening);
+        Assert.AreEqual(CapabilityStatus.RequiresPark, vm.Status);
+    }
+
+    [TestMethod]
+    public async Task PromptAnsweredAfterDrivingOff_StopsMic()
+    {
+        FakeMic mic = new() { Prompt = new() };
+        CabinSoundViewModel vm = new(mic);
+        vm.OnParkStateChanged(ParkState.Parked);
+        Task start = vm.StartCommand.ExecuteAsync(null);
+
+        vm.OnParkStateChanged(ParkState.Moving);
+        mic.Prompt.SetResult();
+        await start;
+
+        Assert.IsFalse(mic.IsActive);
         Assert.IsFalse(vm.IsListening);
         Assert.AreEqual(CapabilityStatus.RequiresPark, vm.Status);
     }

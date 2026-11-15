@@ -37,10 +37,18 @@ internal sealed class FakeCamera : ICameraSource
 
     public bool IsActive { get; private set; }
 
-    public Task<CapabilityStatus> StartAsync(string videoElementId)
+    /// <summary>When set, StartAsync waits on this, like a permission prompt still on screen.</summary>
+    public TaskCompletionSource? Prompt { get; set; }
+
+    public async Task<CapabilityStatus> StartAsync(string videoElementId)
     {
+        if (Prompt is not null)
+        {
+            await Prompt.Task;
+        }
+
         IsActive = StartResult == CapabilityStatus.Active;
-        return Task.FromResult(StartResult);
+        return StartResult;
     }
 
     public void Stop()
@@ -60,10 +68,17 @@ internal sealed class FakeMic : IMicSource
 
     public bool IsActive { get; private set; }
 
-    public Task<CapabilityStatus> StartAsync()
+    public TaskCompletionSource? Prompt { get; set; }
+
+    public async Task<CapabilityStatus> StartAsync()
     {
+        if (Prompt is not null)
+        {
+            await Prompt.Task;
+        }
+
         IsActive = true;
-        return Task.FromResult(CapabilityStatus.Active);
+        return CapabilityStatus.Active;
     }
 
     public void Stop()
