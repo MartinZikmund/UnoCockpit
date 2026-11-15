@@ -1,0 +1,119 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <CornerRadius x:Key="CockpitCardCornerRadius">16</CornerRadius>
+  <x:Double x:Key="CockpitTouchTarget">64</x:Double>
+
+  <Style x:Key="CockpitCardStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource CockpitCardBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource CockpitCardStrokeBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource CockpitCardCornerRadius}" />
+    <Setter Property="Padding" Value="24" />
+  </Style>
+
+  <!-- Flat, borderless button: dock icons, status bar actions. The car UI has no button chrome at rest. -->
+  <Style x:Key="CockpitFlatButtonStyle" TargetType="Button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{ThemeResource CockpitTextPrimaryBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="12" />
+    <Setter Property="MinWidth" Value="{StaticResource CockpitTouchTarget}" />
+    <Setter Property="MinHeight" Value="{StaticResource CockpitTouchTarget}" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="FontFamily" Value="{StaticResource CockpitFontFamily}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Grid x:Name="Root"
+                Background="{TemplateBinding Background}"
+                CornerRadius="12">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource CockpitPressedBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource CockpitPressedBrush}" />
+                    <Setter Target="Content.Opacity" Value="0.7" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Content.Opacity" Value="0.35" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <ContentPresenter x:Name="Content"
+                              Padding="{TemplateBinding Padding}"
+                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Foreground="{TemplateBinding Foreground}" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Rounded pill, the car's primary action shape. -->
+  <Style x:Key="CockpitPillButtonStyle" BasedOn="{StaticResource CockpitFlatButtonStyle}" TargetType="Button">
+    <Setter Property="Background" Value="{ThemeResource CockpitCardBrush}" />
+    <Setter Property="Padding" Value="28,12" />
+    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Grid x:Name="Root"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{ThemeResource CockpitCardStrokeBrush}"
+                BorderThickness="1"
+                CornerRadius="32">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Opacity" Value="0.9" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Opacity" Value="0.75" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Opacity" Value="0.4" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <ContentPresenter Padding="{TemplateBinding Padding}"
+                              HorizontalContentAlignment="Center"
+                              VerticalContentAlignment="Center"
+                              Content="{TemplateBinding Content}"
+                              Foreground="{TemplateBinding Foreground}" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CockpitAccentPillButtonStyle" BasedOn="{StaticResource CockpitPillButtonStyle}" TargetType="Button">
+    <Setter Property="Background" Value="{ThemeResource CockpitAccentBrush}" />
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+
+  <Style x:Key="CockpitIconStyle" TargetType="FontIcon">
+    <Setter Property="FontSize" Value="28" />
+  </Style>
+</ResourceDictionary>

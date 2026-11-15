@@ -1,0 +1,18 @@
+<UserControl x:Class="UnoCockpit.Views.ParkToPlayOverlay"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Border Background="{ThemeResource CockpitOverlayBrush}" CornerRadius="{StaticResource CockpitCardCornerRadius}">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+      <Border Width="96"
+              Height="96"
+              HorizontalAlignment="Center"
+              BorderBrush="{ThemeResource CockpitTextPrimaryBrush}"
+              BorderThickness="4"
+              CornerRadius="48">
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="48" FontWeight="SemiBold" Style="{StaticResource CockpitTextStyle}" Text="P" />
+      </Border>
+      <TextBlock HorizontalAlignment="Center" Style="{StaticResource CockpitTitleStyle}" Text="Park to play" />
+      <TextBlock MaxWidth="420" HorizontalAlignment="Center" HorizontalTextAlignment="Center" Style="{StaticResource CockpitBodyStyle}" Text="Charge Run, Photo Booth and Cabin Sound work while the car is parked. The Trip view stays on while you drive." />
+    </StackPanel>
+  </Border>
+</UserControl>

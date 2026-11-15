@@ -1,0 +1,59 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <SolidColorBrush x:Key="CockpitBackgroundBrush" Color="#FFF4F4F4" />
+      <SolidColorBrush x:Key="CockpitPanelBrush" Color="#FFE7E8EA" />
+      <SolidColorBrush x:Key="CockpitCardBrush" Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="CockpitCardStrokeBrush" Color="#FFDDDEE1" />
+      <SolidColorBrush x:Key="CockpitDockBrush" Color="#FFFAFAFA" />
+      <SolidColorBrush x:Key="CockpitDividerBrush" Color="#FFD9DADD" />
+      <SolidColorBrush x:Key="CockpitTextPrimaryBrush" Color="#FF171A20" />
+      <SolidColorBrush x:Key="CockpitTextSecondaryBrush" Color="#FF5C5E62" />
+      <SolidColorBrush x:Key="CockpitTextTertiaryBrush" Color="#FF9A9DA3" />
+      <SolidColorBrush x:Key="CockpitAccentBrush" Color="#FF3E6AE1" />
+      <SolidColorBrush x:Key="CockpitWarningBrush" Color="#FFE31937" />
+      <SolidColorBrush x:Key="CockpitAvailableBrush" Color="#FF239D44" />
+      <SolidColorBrush x:Key="CockpitOverlayBrush" Color="#E6F4F4F4" />
+      <SolidColorBrush x:Key="CockpitPressedBrush" Color="#14000000" />
+    </ResourceDictionary>
+
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="CockpitBackgroundBrush" Color="#FF0E0F11" />
+      <SolidColorBrush x:Key="CockpitPanelBrush" Color="#FF16181B" />
+      <SolidColorBrush x:Key="CockpitCardBrush" Color="#FF1F2125" />
+      <SolidColorBrush x:Key="CockpitCardStrokeBrush" Color="#FF2B2E34" />
+      <SolidColorBrush x:Key="CockpitDockBrush" Color="#FF000000" />
+      <SolidColorBrush x:Key="CockpitDividerBrush" Color="#FF26292E" />
+      <SolidColorBrush x:Key="CockpitTextPrimaryBrush" Color="#FFF4F5F7" />
+      <SolidColorBrush x:Key="CockpitTextSecondaryBrush" Color="#FF9AA0A9" />
+      <SolidColorBrush x:Key="CockpitTextTertiaryBrush" Color="#FF5D626B" />
+      <SolidColorBrush x:Key="CockpitAccentBrush" Color="#FF5B84F0" />
+      <SolidColorBrush x:Key="CockpitWarningBrush" Color="#FFF0384D" />
+      <SolidColorBrush x:Key="CockpitAvailableBrush" Color="#FF3CC562" />
+      <SolidColorBrush x:Key="CockpitOverlayBrush" Color="#E60E0F11" />
+      <SolidColorBrush x:Key="CockpitPressedBrush" Color="#1FFFFFFF" />
+    </ResourceDictionary>
+
+    <ResourceDictionary x:Key="HighContrast">
+      <StaticResource x:Key="CockpitBackgroundBrush" ResourceKey="SystemColorWindowColorBrush" />
+      <StaticResource x:Key="CockpitPanelBrush" ResourceKey="SystemColorWindowColorBrush" />
+      <StaticResource x:Key="CockpitCardBrush" ResourceKey="SystemColorWindowColorBrush" />
+      <StaticResource x:Key="CockpitCardStrokeBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+      <StaticResource x:Key="CockpitDockBrush" ResourceKey="SystemColorWindowColorBrush" />
+      <StaticResource x:Key="CockpitDividerBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+      <StaticResource x:Key="CockpitTextPrimaryBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+      <StaticResource x:Key="CockpitTextSecondaryBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+      <StaticResource x:Key="CockpitTextTertiaryBrush" ResourceKey="SystemColorGrayTextColorBrush" />
+      <StaticResource x:Key="CockpitAccentBrush" ResourceKey="SystemColorHighlightColorBrush" />
+      <StaticResource x:Key="CockpitWarningBrush" ResourceKey="SystemColorHighlightColorBrush" />
+      <StaticResource x:Key="CockpitAvailableBrush" ResourceKey="SystemColorHighlightColorBrush" />
+      <StaticResource x:Key="CockpitOverlayBrush" ResourceKey="SystemColorWindowColorBrush" />
+      <StaticResource x:Key="CockpitPressedBrush" ResourceKey="SystemColorHighlightColorBrush" />
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+
+  <Color x:Key="CockpitDarkPageColor">#FF0E0F11</Color>
+  <Color x:Key="CockpitLightPageColor">#FFF4F4F4</Color>
+</ResourceDictionary>

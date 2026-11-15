@@ -1,0 +1,17 @@
+<UserControl x:Class="UnoCockpit.Views.DockIcon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid RowSpacing="8">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="3" />
+    </Grid.RowDefinitions>
+    <FontIcon x:Name="Icon" FontSize="30" Foreground="{ThemeResource CockpitTextPrimaryBrush}" />
+    <Rectangle x:Name="Underline"
+               Grid.Row="1"
+               Width="28"
+               Fill="{ThemeResource CockpitAccentBrush}"
+               RadiusX="1.5"
+               RadiusY="1.5" />
+  </Grid>
+</UserControl>

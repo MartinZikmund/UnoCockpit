@@ -1,12 +1,195 @@
 <Page x:Class="UnoCockpit.ShellPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Background="#111214"
-      RequestedTheme="Dark">
-  <StackPanel Padding="24" Spacing="8">
-    <TextBlock x:Name="DebugSpeed" AutomationProperties.AutomationId="DebugSpeed" FontSize="48" Text="{x:Bind ViewModel.Trip.SpeedText, Mode=OneWay}" />
-    <TextBlock AutomationProperties.AutomationId="DebugDemo" Text="{x:Bind ViewModel.IsDemo, Mode=OneWay}" />
-    <TextBlock Text="{x:Bind ViewModel.ParkState, Mode=OneWay}" />
-    <TextBlock Text="{x:Bind ViewModel.ClockText, Mode=OneWay}" />
-  </StackPanel>
+      xmlns:apps="using:UnoCockpit.Views.Apps"
+      xmlns:local="using:UnoCockpit"
+      xmlns:views="using:UnoCockpit.Views"
+      xmlns:drawing="using:UnoCockpit.Views.Drawing"
+      Background="{ThemeResource CockpitBackgroundBrush}"
+      FontFamily="{StaticResource CockpitFontFamily}">
+
+  <Grid x:Name="RootGrid">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="88" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="2*" />
+      <ColumnDefinition Width="3*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- Car panel -->
+    <Grid Padding="32,24" Background="{ThemeResource CockpitPanelBrush}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <StackPanel Orientation="Horizontal" Spacing="20">
+        <TextBlock Opacity="{x:Bind local:ShellPage.GearOpacity(ViewModel.ParkState, 'P'), Mode=OneWay}" Style="{StaticResource CockpitTitleStyle}" Text="P" />
+        <TextBlock Opacity="0.3" Style="{StaticResource CockpitTitleStyle}" Text="R" />
+        <TextBlock Opacity="0.3" Style="{StaticResource CockpitTitleStyle}" Text="N" />
+        <TextBlock Opacity="{x:Bind local:ShellPage.GearOpacity(ViewModel.ParkState, 'D'), Mode=OneWay}" Style="{StaticResource CockpitTitleStyle}" Text="D" />
+      </StackPanel>
+
+      <StackPanel Grid.Row="1" Margin="0,8,0,0">
+        <TextBlock AutomationProperties.AutomationId="CarSpeed"
+                   AutomationProperties.Name="Speed"
+                   Style="{StaticResource CockpitHeroNumberStyle}"
+                   Text="{x:Bind ViewModel.Trip.SpeedText, Mode=OneWay}" />
+        <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind ViewModel.Trip.UnitLabel, Mode=OneWay}" />
+      </StackPanel>
+
+      <drawing:CarCanvas x:Name="Car"
+                         Grid.Row="2"
+                         Margin="0,16"
+                         IsNight="{x:Bind ViewModel.IsDark, Mode=OneWay}"
+                         IsParked="{x:Bind local:ShellPage.IsParked(ViewModel.ParkState), Mode=OneWay}" />
+
+      <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="12">
+        <Border Padding="16,8"
+                Background="{ThemeResource CockpitAccentBrush}"
+                CornerRadius="16"
+                Visibility="{x:Bind local:ShellPage.Show(ViewModel.IsDemo), Mode=OneWay}">
+          <TextBlock FontSize="14" FontWeight="SemiBold" Foreground="White" Text="DEMO DRIVE" />
+        </Border>
+        <TextBlock VerticalAlignment="Center" Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind local:ShellPage.ParkText(ViewModel.ParkState), Mode=OneWay}" />
+      </StackPanel>
+    </Grid>
+
+    <!-- App panel -->
+    <Grid Grid.Column="1" Padding="32,16,32,24" RowSpacing="16">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="56" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <!-- Status bar -->
+      <Grid ColumnSpacing="24">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBlock VerticalAlignment="Center" Style="{StaticResource CockpitTitleStyle}" Text="{x:Bind local:ShellPage.AppTitle(ViewModel.ActiveApp), Mode=OneWay}" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="24">
+          <FontIcon AutomationProperties.Name="GPS"
+                    FontSize="22"
+                    Foreground="{ThemeResource CockpitTextPrimaryBrush}"
+                    Glyph="&#xE707;"
+                    Opacity="{x:Bind local:ShellPage.OnOff(ViewModel.HasGpsFix), Mode=OneWay}" />
+          <FontIcon AutomationProperties.Name="Network"
+                    FontSize="22"
+                    Foreground="{ThemeResource CockpitTextPrimaryBrush}"
+                    Glyph="&#xE701;"
+                    Opacity="{x:Bind local:ShellPage.OnOff(ViewModel.IsOnline), Mode=OneWay}" />
+          <TextBlock Style="{StaticResource CockpitStatusTextStyle}"
+                     Text="{x:Bind ViewModel.TemperatureText, Mode=OneWay}"
+                     Visibility="{x:Bind local:ShellPage.Show(ViewModel.HasTemperature), Mode=OneWay}" />
+          <TextBlock FontWeight="SemiBold" Style="{StaticResource CockpitStatusTextStyle}" Text="{x:Bind ViewModel.ClockText, Mode=OneWay}" />
+        </StackPanel>
+      </Grid>
+
+      <!-- Auto Demo-mode banner -->
+      <Border Grid.Row="1"
+              Padding="20,8,8,8"
+              Style="{StaticResource CockpitCardStyle}"
+              Visibility="{x:Bind local:ShellPage.Show(ViewModel.IsDemoBannerVisible), Mode=OneWay}">
+        <Grid ColumnSpacing="12">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <FontIcon FontSize="20" Foreground="{ThemeResource CockpitAccentBrush}" Glyph="&#xE946;" />
+          <TextBlock Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CockpitBodyStyle}" Text="Location is unavailable, so you're watching a demo drive. Allow location in the browser to use your car's GPS." />
+          <Button Grid.Column="2"
+                  AutomationProperties.AutomationId="DismissDemoBanner"
+                  AutomationProperties.Name="Dismiss"
+                  Command="{x:Bind ViewModel.DismissDemoBannerCommand}"
+                  Style="{StaticResource CockpitFlatButtonStyle}">
+            <FontIcon FontSize="16" Glyph="&#xE711;" />
+          </Button>
+        </Grid>
+      </Border>
+
+      <!-- Mini-apps -->
+      <Grid Grid.Row="2">
+        <apps:TripHudView ViewModel="{x:Bind ViewModel.Trip}" Visibility="{x:Bind local:ShellPage.IsApp(ViewModel.ActiveApp, 'Trip'), Mode=OneWay}" />
+        <apps:ArcadeView Shell="{x:Bind ViewModel}" VirtualGamepad="{x:Bind Sources.VirtualGamepad}" Visibility="{x:Bind local:ShellPage.IsApp(ViewModel.ActiveApp, 'Arcade'), Mode=OneWay}" />
+        <apps:PhotoBoothView ViewModel="{x:Bind ViewModel.Photo}" Visibility="{x:Bind local:ShellPage.IsApp(ViewModel.ActiveApp, 'Photo'), Mode=OneWay}" />
+        <apps:CabinSoundView ViewModel="{x:Bind ViewModel.Sound}" Visibility="{x:Bind local:ShellPage.IsApp(ViewModel.ActiveApp, 'Sound'), Mode=OneWay}" />
+        <apps:SensorLabView ViewModel="{x:Bind ViewModel.Lab}" Visibility="{x:Bind local:ShellPage.IsApp(ViewModel.ActiveApp, 'Lab'), Mode=OneWay}" />
+        <views:ParkToPlayOverlay Visibility="{x:Bind local:ShellPage.Show(ViewModel.IsActiveAppLocked), Mode=OneWay}" />
+      </Grid>
+    </Grid>
+
+    <!-- Dock -->
+    <Grid Grid.Row="1"
+          Grid.ColumnSpan="2"
+          Padding="24,0"
+          Background="{ThemeResource CockpitDockBrush}"
+          BorderBrush="{ThemeResource CockpitDividerBrush}"
+          BorderThickness="0,1,0,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Button HorizontalAlignment="Left"
+              AutomationProperties.AutomationId="SettingsButton"
+              AutomationProperties.Name="Settings"
+              Style="{StaticResource CockpitFlatButtonStyle}">
+        <FontIcon FontSize="30" Glyph="&#xE804;" />
+        <Button.Flyout>
+          <MenuFlyout Placement="Top">
+            <RadioMenuFlyoutItem MinHeight="56" Padding="20,14" FontSize="18" x:Name="ThemeAutoItem" Click="OnThemeAuto" GroupName="Theme" IsChecked="True" Text="Theme: automatic (sunrise / sunset)" />
+            <RadioMenuFlyoutItem MinHeight="56" Padding="20,14" FontSize="18" Click="OnThemeLight" GroupName="Theme" Text="Theme: light" />
+            <RadioMenuFlyoutItem MinHeight="56" Padding="20,14" FontSize="18" Click="OnThemeDark" GroupName="Theme" Text="Theme: dark" />
+            <MenuFlyoutSeparator />
+            <MenuFlyoutItem MinHeight="56" Padding="20,14" FontSize="18" Command="{x:Bind ViewModel.Trip.ToggleUnitsCommand}" Text="Switch km/h / mph" />
+            <ToggleMenuFlyoutItem MinHeight="56" Padding="20,14" FontSize="18" x:Name="DemoItem" Click="OnToggleDemo" Text="Demo drive" />
+            <MenuFlyoutItem MinHeight="56" Padding="20,14" FontSize="18" Click="OnResetTrip" Text="Reset trip" />
+          </MenuFlyout>
+        </Button.Flyout>
+      </Button>
+
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+        <Button AutomationProperties.AutomationId="DockTrip" AutomationProperties.Name="Trip" Click="OnDock" Tag="Trip" Style="{StaticResource CockpitFlatButtonStyle}" Width="96" Height="72">
+          <views:DockIcon Glyph="&#xEC4A;" IsActive="{x:Bind local:ShellPage.IsActive(ViewModel.ActiveApp, 'Trip'), Mode=OneWay}" />
+        </Button>
+        <Button AutomationProperties.AutomationId="DockArcade" AutomationProperties.Name="Arcade" Click="OnDock" Tag="Arcade" Style="{StaticResource CockpitFlatButtonStyle}" Width="96" Height="72">
+          <views:DockIcon Glyph="&#xE7FC;" IsActive="{x:Bind local:ShellPage.IsActive(ViewModel.ActiveApp, 'Arcade'), Mode=OneWay}" />
+        </Button>
+        <Button AutomationProperties.AutomationId="DockPhoto" AutomationProperties.Name="Photo Booth" Click="OnDock" Tag="Photo" Style="{StaticResource CockpitFlatButtonStyle}" Width="96" Height="72">
+          <views:DockIcon Glyph="&#xE722;" IsActive="{x:Bind local:ShellPage.IsActive(ViewModel.ActiveApp, 'Photo'), Mode=OneWay}" />
+        </Button>
+        <Button AutomationProperties.AutomationId="DockSound" AutomationProperties.Name="Cabin Sound" Click="OnDock" Tag="Sound" Style="{StaticResource CockpitFlatButtonStyle}" Width="96" Height="72">
+          <views:DockIcon Glyph="&#xE8D6;" IsActive="{x:Bind local:ShellPage.IsActive(ViewModel.ActiveApp, 'Sound'), Mode=OneWay}" />
+        </Button>
+        <Button AutomationProperties.AutomationId="DockLab" AutomationProperties.Name="Sensor Lab" Click="OnDock" Tag="Lab" Style="{StaticResource CockpitFlatButtonStyle}" Width="96" Height="72">
+          <views:DockIcon Glyph="&#xE9D9;" IsActive="{x:Bind local:ShellPage.IsActive(ViewModel.ActiveApp, 'Lab'), Mode=OneWay}" />
+        </Button>
+      </StackPanel>
+
+      <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="8">
+        <Button AutomationProperties.AutomationId="VoiceButton"
+                AutomationProperties.Name="Voice command"
+                Click="OnVoice"
+                Style="{StaticResource CockpitFlatButtonStyle}"
+                Visibility="{x:Bind local:ShellPage.Show(Sources.SpeechSupported)}">
+          <FontIcon FontSize="26" Glyph="&#xE720;" />
+        </Button>
+        <Button AutomationProperties.AutomationId="FullscreenButton"
+                AutomationProperties.Name="Fullscreen"
+                Click="OnFullscreen"
+                Style="{StaticResource CockpitFlatButtonStyle}">
+          <FontIcon FontSize="26" Glyph="&#xE740;" />
+        </Button>
+      </StackPanel>
+    </Grid>
+  </Grid>
 </Page>

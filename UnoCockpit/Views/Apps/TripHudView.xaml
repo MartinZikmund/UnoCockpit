@@ -1,0 +1,7 @@
+<UserControl x:Class="UnoCockpit.Views.Apps.TripHudView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Border Style="{StaticResource CockpitCardStyle}">
+    <TextBlock Style="{StaticResource CockpitBodyStyle}" Text="TripHudView" />
+  </Border>
+</UserControl>
