@@ -31,6 +31,24 @@ public sealed class ShellViewModelTests
     }
 
     [TestMethod]
+    public async Task LeavingPhotoOrSound_StopsTheirStreams()
+    {
+        FakeCamera cam = new();
+        FakeMic mic = new();
+        ShellViewModel vm = Create(cam, mic);
+        vm.OnLocation(LocationResult.Failed(LocationStatus.Denied), isDemo: false);
+
+        vm.OpenAppCommand.Execute(AppId.Photo);
+        await vm.Photo.StartCommand.ExecuteAsync("video-1");
+        vm.OpenAppCommand.Execute(AppId.Sound);
+        Assert.IsFalse(cam.IsActive);
+
+        await vm.Sound.StartCommand.ExecuteAsync(null);
+        vm.OpenAppCommand.Execute(AppId.Trip);
+        Assert.IsFalse(mic.IsActive);
+    }
+
+    [TestMethod]
     public void TripHud_NeverLocked()
     {
         ShellViewModel vm = Create();
