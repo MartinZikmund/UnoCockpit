@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "UnoCockpit",
+  "display": "standalone",
+  "name": "UnoCockpit",
+  "short_name": "UnoCockpit",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}

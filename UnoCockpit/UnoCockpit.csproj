@@ -1,0 +1,33 @@
+<Project Sdk="Uno.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\UnoCockpit.Core\UnoCockpit.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <UnoSingleProject>true</UnoSingleProject>
+
+    <!-- Display name -->
+    <ApplicationTitle>Uno Cockpit</ApplicationTitle>
+    <!-- App Identifier -->
+    <ApplicationId>dev.zikmund.unocockpit</ApplicationId>
+    <!-- Versions -->
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <!-- Package Publisher -->
+    <ApplicationPublisher>UnoCockpit</ApplicationPublisher>
+    <!-- Package Description -->
+    <Description>Sensor-powered car cockpit built with Uno Platform.</Description>
+
+    <!--
+      UnoFeatures are used to quickly add and manage features enabled for your app.
+      https://aka.platform.uno/singleproject-features
+    -->
+    <UnoFeatures>
+      Mvvm;
+      Skia;
+    </UnoFeatures>
+  </PropertyGroup>
+
+</Project>

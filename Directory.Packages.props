@@ -1,0 +1,11 @@
+<Project ToolsVersion="15.0">
+  <!--
+    To update the version of Uno, update the Uno.Sdk version in global.json instead.
+    See https://aka.platform.uno/using-uno-sdk#implicit-packages for the packages Uno.Sdk brings implicitly.
+  -->
+  <ItemGroup>
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageVersion Include="MSTest" Version="4.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="11.0.0" />
+  </ItemGroup>
+</Project>
