@@ -36,4 +36,15 @@ public sealed class UnitsFormatterTests
     [TestMethod]
     public void Coordinates_HemisphereLetters() =>
         Assert.AreEqual("33.87° S, 151.21° E", UnitsFormatter.Coordinates(-33.8688, 151.2093));
+
+    [TestMethod]
+    [DataRow("en-US", false)]
+    [DataRow("es-US", false)]
+    [DataRow("en-GB", true)]
+    [DataRow("cs-CZ", true)]
+    [DataRow("de", true)]
+    [DataRow("", true)]
+    [DataRow(null, true)]
+    public void DefaultMetric_FromBrowserLanguage(string? language, bool metric) =>
+        Assert.AreEqual(metric, UnitsFormatter.DefaultMetricForLanguage(language));
 }

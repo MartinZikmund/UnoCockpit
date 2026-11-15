@@ -11,7 +11,20 @@ public sealed class UnitsFormatter(bool metric)
 
     public string SpeedUnit => metric ? "km/h" : "mph";
 
-    public static bool DefaultMetric(RegionInfo region) => region.IsMetric;
+    // Countries that drive in mph and read °F; the UK uses mph but °C, so it stays metric and can toggle.
+    private static readonly HashSet<string> ImperialRegions = new(StringComparer.OrdinalIgnoreCase) { "US", "LR", "MM", "PR", "GU", "VI", "AS", "MP", "UM" };
+
+    /// <summary>Default units from a BCP 47 language tag such as <c>navigator.language</c> ("en-US").</summary>
+    public static bool DefaultMetricForLanguage(string? language)
+    {
+        if (string.IsNullOrEmpty(language))
+        {
+            return true;
+        }
+
+        string[] parts = language.Split('-', '_');
+        return parts.Length < 2 || !ImperialRegions.Contains(parts[^1]);
+    }
 
     public string Speed(double? mps) => mps is { } v
         ? Math.Round(v * (metric ? 3.6 : 3600 / MetresPerMile)).ToString("0", Invariant)
