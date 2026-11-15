@@ -54,6 +54,22 @@ public sealed class ShellViewModelTests
     }
 
     [TestMethod]
+    public void NullSpeedJitter_Parks()
+    {
+        ShellViewModel vm = Create();
+        Random rnd = new(3);
+        for (int i = 0; i < 20; i++)
+        {
+            double a = rnd.NextDouble() * Math.PI * 2;
+            double r = rnd.NextDouble() * 5 / 111_195.0;
+            vm.OnClock(T0.AddSeconds(i));
+            vm.OnLocation(new LocationResult(LocationStatus.Ok, new GeoSample(T0.AddSeconds(i), 50.0755 + Math.Sin(a) * r, 14.4378 + Math.Cos(a) * r, null, 5, null, null)), isDemo: false);
+        }
+
+        Assert.AreEqual(ParkState.Parked, vm.ParkState);
+    }
+
+    [TestMethod]
     public void TransientTimeout_WhileDriving_StaysMoving()
     {
         ShellViewModel vm = Create();

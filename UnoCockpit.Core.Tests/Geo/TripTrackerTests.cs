@@ -17,11 +17,38 @@ public sealed class TripTrackerTests
     public void NullSpeed_IsDerived()
     {
         TripTracker t = new();
-        t.Add(Fix(0, 0));
-        t.Add(Fix(1, 10));
+        t.Add(Fix(0, 0, accuracy: 2));
+        t.Add(Fix(1, 10, accuracy: 2));
 
         Assert.IsNotNull(t.CurrentSpeedMps);
         Assert.AreEqual(10, t.CurrentSpeedMps.Value, 0.5);
+    }
+
+    [TestMethod]
+    public void NullSpeed_ParkedJitter_SettlesToZero()
+    {
+        TripTracker t = new();
+        Random rnd = new(7);
+        for (int i = 0; i < 30; i++)
+        {
+            double angle = rnd.NextDouble() * Math.PI * 2;
+            double r = rnd.NextDouble() * 5;
+            t.Add(Fix(i, Math.Sin(angle) * r, Math.Cos(angle) * r, accuracy: 5));
+        }
+
+        Assert.AreEqual(0, t.CurrentSpeedMps);
+    }
+
+    [TestMethod]
+    public void NullSpeed_SteadyDrive_IsDerived()
+    {
+        TripTracker t = new();
+        for (int i = 0; i <= 10; i++)
+        {
+            t.Add(Fix(i, i * 10, accuracy: 5));
+        }
+
+        Assert.AreEqual(10, t.CurrentSpeedMps!.Value, 1);
     }
 
     [TestMethod]
