@@ -49,9 +49,7 @@ public sealed partial class ShellViewModel : ObservableObject
         _park.StateChanged += (_, state) =>
         {
             ParkState = state;
-            Arcade.OnParkStateChanged(state);
-            Photo.OnParkStateChanged(state);
-            Sound.OnParkStateChanged(state);
+            ForwardParkState();
         };
     }
 
@@ -76,6 +74,7 @@ public sealed partial class ShellViewModel : ObservableObject
     public partial ParkState ParkState { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsActiveAppLocked))]
     public partial bool IsDemo { get; set; }
 
     [ObservableProperty]
@@ -109,11 +108,22 @@ public sealed partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsOnline { get; set; } = true;
 
-    public bool IsActiveAppLocked => ActiveApp is AppId.Arcade or AppId.Photo or AppId.Sound && ParkState != ParkState.Parked;
+    // The demo drive is simulated, so it moves the gear display but never locks the real apps.
+    public bool IsActiveAppLocked => ActiveApp is AppId.Arcade or AppId.Photo or AppId.Sound && !IsDemo && ParkState != ParkState.Parked;
 
     public GeoSample? LastFix => _lastFix;
 
     partial void OnThemeOverrideDarkChanged(bool? value) => UpdateTheme();
+
+    partial void OnIsDemoChanged(bool value) => ForwardParkState();
+
+    private void ForwardParkState()
+    {
+        ParkState effective = IsDemo ? ParkState.Parked : ParkState;
+        Arcade.OnParkStateChanged(effective);
+        Photo.OnParkStateChanged(effective);
+        Sound.OnParkStateChanged(effective);
+    }
 
     // Leaving an app releases its camera or microphone; nothing keeps listening off-screen.
     partial void OnActiveAppChanged(AppId oldValue, AppId newValue)

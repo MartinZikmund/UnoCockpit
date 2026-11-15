@@ -51,7 +51,7 @@ public sealed partial class ShellPage : Page
     public static double GearOpacity(ParkState state, string gear) =>
         (gear == "D") == (state == ParkState.Moving) ? 1 : InactiveOpacity;
 
-    public static string ParkText(ParkState state) => state switch
+    public static string ParkText(ParkState state, bool isDemo) => isDemo ? "Simulated drive · apps stay playable" : state switch
     {
         ParkState.Moving => "Driving · games and camera are paused",
         ParkState.Parked => "Parked",

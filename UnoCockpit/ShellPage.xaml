@@ -55,7 +55,7 @@
                 Visibility="{x:Bind local:ShellPage.Show(ViewModel.IsDemo), Mode=OneWay}">
           <TextBlock FontSize="14" FontWeight="SemiBold" Foreground="White" Text="DEMO DRIVE" />
         </Border>
-        <TextBlock VerticalAlignment="Center" Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind local:ShellPage.ParkText(ViewModel.ParkState), Mode=OneWay}" />
+        <TextBlock VerticalAlignment="Center" Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind local:ShellPage.ParkText(ViewModel.ParkState, ViewModel.IsDemo), Mode=OneWay}" />
       </StackPanel>
     </Grid>
 
