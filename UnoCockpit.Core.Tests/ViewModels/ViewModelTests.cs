@@ -41,6 +41,19 @@ public sealed class ShellViewModelTests
     }
 
     [TestMethod]
+    public void RepeatedFixTimestamps_StillPark()
+    {
+        ShellViewModel vm = Create();
+        for (int i = 0; i <= 6; i++)
+        {
+            vm.OnClock(T0.AddSeconds(i));
+            vm.OnLocation(Fix(T0, 0), isDemo: false);
+        }
+
+        Assert.AreEqual(ParkState.Parked, vm.ParkState);
+    }
+
+    [TestMethod]
     public void NoFix_ForcesParked()
     {
         ShellViewModel vm = Create();
