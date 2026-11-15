@@ -29,6 +29,8 @@ public sealed class SensorHub : IDisposable
     private bool _framesHooked;
     private DateTimeOffset _lastWeather = DateTimeOffset.MinValue;
     private bool _wasRunning;
+    private bool _wasCameraActive;
+    private bool _wasMicActive;
 
     public SensorHub(ShellViewModel vm, Sources sources, DispatcherQueue queue)
     {
@@ -198,10 +200,21 @@ public sealed class SensorHub : IDisposable
         {
             _vm.Lab.Update("camera", CapabilityStatus.Active, "Streaming to Photo Booth");
         }
+        else if (_wasCameraActive)
+        {
+            _vm.Lab.Update("camera", CapabilityStatus.Available, "Stopped");
+        }
 
         if (_sources.Mic.IsActive)
         {
             _vm.Lab.Update("microphone", CapabilityStatus.Active, string.Create(CultureInfo.InvariantCulture, $"{_vm.Sound.LevelDb:0} dBFS"));
         }
+        else if (_wasMicActive)
+        {
+            _vm.Lab.Update("microphone", CapabilityStatus.Available, "Stopped");
+        }
+
+        _wasCameraActive = _sources.Camera.IsActive;
+        _wasMicActive = _sources.Mic.IsActive;
     }
 }
