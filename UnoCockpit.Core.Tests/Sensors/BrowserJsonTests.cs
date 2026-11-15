@@ -81,6 +81,14 @@ public sealed class BrowserJsonTests
     }
 
     [TestMethod]
+    public void Probe_Speech_DisclosesOnlineProcessing()
+    {
+        string json = TeslaProbe.Replace("\"speech\":false", "\"speech\":true");
+
+        StringAssert.Contains(Row(BrowserJson.ParseProbe(json), "speech").Detail, "online");
+    }
+
+    [TestMethod]
     public void Probe_Intel_NoCameraHint()
     {
         string json = TeslaProbe.Replace("AMD Radeon Graphics (navi23)", "Mesa Intel(R) HD Graphics 505").Replace("\"mediaDevices\":true", "\"mediaDevices\":false");
