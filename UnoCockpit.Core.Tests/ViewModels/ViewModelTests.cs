@@ -49,6 +49,24 @@ public sealed class ShellViewModelTests
     }
 
     [TestMethod]
+    public async Task DemoDriveMoving_DoesNotLockRealApps()
+    {
+        FakeCamera cam = new();
+        ShellViewModel vm = Create(cam);
+        vm.OpenAppCommand.Execute(AppId.Photo);
+        vm.OnClock(T0);
+        vm.OnLocation(Fix(T0, 0), isDemo: true);
+        await vm.Photo.StartCommand.ExecuteAsync("video-1");
+
+        vm.OnLocation(Fix(T0.AddSeconds(1), 25), isDemo: true);
+        vm.OnLocation(Fix(T0.AddSeconds(2), 25), isDemo: true);
+
+        Assert.AreEqual(ParkState.Moving, vm.ParkState, "the gear display still follows the demo drive");
+        Assert.IsFalse(vm.IsActiveAppLocked);
+        Assert.IsTrue(cam.IsActive);
+    }
+
+    [TestMethod]
     public void TripHud_NeverLocked()
     {
         ShellViewModel vm = Create();
