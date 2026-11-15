@@ -1,7 +1,86 @@
 <UserControl x:Class="UnoCockpit.Views.Apps.ArcadeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Border Style="{StaticResource CockpitCardStyle}">
-    <TextBlock Style="{StaticResource CockpitBodyStyle}" Text="ArcadeView" />
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:apps="using:UnoCockpit.Views.Apps"
+             xmlns:drawing="using:UnoCockpit.Views.Drawing">
+  <Border Padding="0" Style="{StaticResource CockpitCardStyle}">
+    <Grid CornerRadius="{StaticResource CockpitCardCornerRadius}">
+      <drawing:ArcadeCanvas x:Name="Canvas" />
+
+      <!-- HUD -->
+      <Grid Margin="24,20" VerticalAlignment="Top" ColumnSpacing="16">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="240" />
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+          <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="Score" />
+          <TextBlock AutomationProperties.AutomationId="ArcadeScore" Style="{StaticResource CockpitValueStyle}" Text="{x:Bind Shell.Arcade.Score, Mode=OneWay}" />
+        </StackPanel>
+        <FontIcon Grid.Column="1" VerticalAlignment="Center" FontSize="22" Foreground="{ThemeResource CockpitAvailableBrush}" Glyph="&#xE945;" />
+        <Grid Grid.Column="2" Height="28" VerticalAlignment="Center" Background="{ThemeResource CockpitCardStrokeBrush}" CornerRadius="14">
+          <Rectangle x:Name="BatteryFill"
+                     HorizontalAlignment="Left"
+                     Fill="{ThemeResource CockpitAvailableBrush}"
+                     RadiusX="14"
+                     RadiusY="14"
+                     Width="{x:Bind apps:ArcadeView.BatteryWidth(Shell.Arcade.Battery), Mode=OneWay}" />
+          <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Style="{StaticResource CockpitTextStyle}" Text="{x:Bind apps:ArcadeView.Percent(Shell.Arcade.Battery), Mode=OneWay}" />
+        </Grid>
+      </Grid>
+
+      <!-- Title / game over / paused -->
+      <Border Padding="40,32"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Background="{ThemeResource CockpitOverlayBrush}"
+              CornerRadius="{StaticResource CockpitCardCornerRadius}"
+              Visibility="{x:Bind apps:ArcadeView.ShowMenu(Shell.Arcade.IsRunning, Shell.Arcade.IsPaused), Mode=OneWay}">
+        <StackPanel Spacing="12">
+          <TextBlock HorizontalAlignment="Center" Style="{StaticResource CockpitTitleStyle}" Text="{x:Bind apps:ArcadeView.MenuTitle(Shell.Arcade.IsOver, Shell.Arcade.IsPaused), Mode=OneWay}" />
+          <TextBlock MaxWidth="380" HorizontalAlignment="Center" HorizontalTextAlignment="Center" Style="{StaticResource CockpitBodyStyle}" Text="{x:Bind apps:ArcadeView.MenuBody(Shell.Arcade.IsOver, Shell.Arcade.IsPaused, Shell.Arcade.Score), Mode=OneWay}" />
+          <TextBlock HorizontalAlignment="Center" Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind apps:ArcadeView.Best(Shell.Arcade.HighScore), Mode=OneWay}" />
+          <Button Margin="0,8,0,0"
+                  HorizontalAlignment="Center"
+                  AutomationProperties.AutomationId="ArcadeStart"
+                  Click="OnStart"
+                  Content="{x:Bind apps:ArcadeView.StartText(Shell.Arcade.IsOver, Shell.Arcade.IsPaused), Mode=OneWay}"
+                  Style="{StaticResource CockpitAccentPillButtonStyle}" />
+        </StackPanel>
+      </Border>
+
+      <!-- Touch steering: hold to steer -->
+      <Grid Margin="24" VerticalAlignment="Bottom">
+        <Border x:Name="LeftPad"
+                Width="96"
+                Height="96"
+                HorizontalAlignment="Left"
+                AutomationProperties.AutomationId="ArcadeLeft"
+                AutomationProperties.Name="Steer left"
+                Background="{ThemeResource CockpitPressedBrush}"
+                CornerRadius="48"
+                PointerCanceled="OnPadReleased"
+                PointerCaptureLost="OnPadReleased"
+                PointerPressed="OnLeftPressed"
+                PointerReleased="OnPadReleased">
+          <FontIcon FontSize="32" Foreground="{ThemeResource CockpitTextPrimaryBrush}" Glyph="&#xE76B;" />
+        </Border>
+        <Border x:Name="RightPad"
+                Width="96"
+                Height="96"
+                HorizontalAlignment="Right"
+                AutomationProperties.AutomationId="ArcadeRight"
+                AutomationProperties.Name="Steer right"
+                Background="{ThemeResource CockpitPressedBrush}"
+                CornerRadius="48"
+                PointerCanceled="OnPadReleased"
+                PointerCaptureLost="OnPadReleased"
+                PointerPressed="OnRightPressed"
+                PointerReleased="OnPadReleased">
+          <FontIcon FontSize="32" Foreground="{ThemeResource CockpitTextPrimaryBrush}" Glyph="&#xE76C;" />
+        </Border>
+      </Grid>
+    </Grid>
   </Border>
 </UserControl>
