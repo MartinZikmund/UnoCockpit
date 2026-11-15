@@ -80,6 +80,20 @@ public sealed class ShellViewModelTests
     }
 
     [TestMethod]
+    public void DemoBanner_ShowsForAutoDemo_UntilDismissed()
+    {
+        ShellViewModel vm = Create();
+        vm.OnLocation(Fix(T0, 0), isDemo: true, isAutoDemo: false);
+        Assert.IsFalse(vm.IsDemoBannerVisible);
+
+        vm.OnLocation(Fix(T0, 0), isDemo: true, isAutoDemo: true);
+        Assert.IsTrue(vm.IsDemoBannerVisible);
+
+        vm.DismissDemoBannerCommand.Execute(null);
+        Assert.IsFalse(vm.IsDemoBannerVisible);
+    }
+
+    [TestMethod]
     public void NoFixYet_IsDark() => Assert.IsTrue(Create().IsDark);
 
     [TestMethod]
@@ -266,7 +280,7 @@ public sealed class ArcadeViewModelTests
     public void HighScore_Persists()
     {
         FakeStore store = new();
-        ArcadeViewModel vm = new(seed => new ChargeRunGame(seed), store);
+        ArcadeViewModel vm = new(_ => new ChargeRunGame(1), store);
         vm.Tick(Frame, new GameInput(0, true), false);
         for (int i = 0; i < 400 && !vm.IsOver; i++)
         {

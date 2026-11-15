@@ -79,7 +79,14 @@ public sealed partial class ShellViewModel : ObservableObject
     public partial bool IsDemo { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsDemoBannerVisible))]
     public partial bool IsAutoDemo { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsDemoBannerVisible))]
+    public partial bool IsDemoBannerDismissed { get; set; }
+
+    public bool IsDemoBannerVisible => IsAutoDemo && !IsDemoBannerDismissed;
 
     [ObservableProperty]
     public partial bool IsDark { get; set; } = true;
@@ -110,6 +117,9 @@ public sealed partial class ShellViewModel : ObservableObject
 
     [RelayCommand]
     private void OpenApp(AppId app) => ActiveApp = app;
+
+    [RelayCommand]
+    private void DismissDemoBanner() => IsDemoBannerDismissed = true;
 
     public void OnLocation(LocationResult result, bool isDemo, bool isAutoDemo = false)
     {
