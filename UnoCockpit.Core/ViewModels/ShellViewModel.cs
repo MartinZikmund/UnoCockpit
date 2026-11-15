@@ -115,7 +115,12 @@ public sealed partial class ShellViewModel : ObservableObject
 
     partial void OnThemeOverrideDarkChanged(bool? value) => UpdateTheme();
 
-    partial void OnIsDemoChanged(bool value) => ForwardParkState();
+    partial void OnIsDemoChanged(bool value)
+    {
+        // Demo and real positions don't belong to the same trip.
+        _tracker.Reset();
+        ForwardParkState();
+    }
 
     private void ForwardParkState()
     {

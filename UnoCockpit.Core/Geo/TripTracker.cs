@@ -7,6 +7,7 @@ public sealed class TripTracker
     public const double MovingSpeedMps = 1;
     public const int MaxBreadcrumbs = 2_000;
     public const double StationaryAfterSeconds = 3;
+    public const double MaxPlausibleSpeedMps = 100;
 
     private readonly List<(double EastM, double NorthM)> _breadcrumbs = new();
     private GeoSample? _first;
@@ -39,6 +40,15 @@ public sealed class TripTracker
         }
 
         double stepM = GeoMath.DistanceMeters(_previous.Latitude, _previous.Longitude, s.Latitude, s.Longitude);
+        double stepS = (s.Timestamp - _previous.Timestamp).TotalSeconds;
+        if (stepM > MaxPlausibleSpeedMps * Math.Max(stepS, 1))
+        {
+            // A teleport (demo loop restart, switching sources): start a new trip instead of counting it.
+            Reset();
+            Add(s);
+            return;
+        }
+
         CurrentHeadingDeg = s.HeadingDeg ?? (stepM > 3
             ? GeoMath.BearingDeg(_previous.Latitude, _previous.Longitude, s.Latitude, s.Longitude)
             : CurrentHeadingDeg);
