@@ -1,0 +1,41 @@
+name: Car report
+description: Tell us how Uno Cockpit runs in your car's browser.
+title: "Car report: <model> <year>"
+labels: ["car-report"]
+body:
+  - type: input
+    id: car
+    attributes:
+      label: Car
+      description: Model and year, e.g. "Model 3 2023".
+    validations:
+      required: true
+  - type: input
+    id: software
+    attributes:
+      label: Car software version
+      description: Controls > Software, e.g. 2026.32.5.
+  - type: textarea
+    id: report
+    attributes:
+      label: Sensor Lab report
+      description: Open Sensor Lab, tap "Copy report" and paste it here.
+      render: text
+  - type: checkboxes
+    id: works
+    attributes:
+      label: What worked?
+      options:
+        - label: The app loaded
+        - label: Trip view shows speed and heading
+        - label: Charge Run with a USB gamepad
+        - label: Photo Booth camera (parked)
+        - label: Cabin Sound microphone (parked)
+  - type: input
+    id: load
+    attributes:
+      label: Roughly how long did the first load take?
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?
