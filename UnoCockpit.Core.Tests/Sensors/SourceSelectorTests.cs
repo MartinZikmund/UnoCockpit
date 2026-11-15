@@ -31,14 +31,56 @@ public sealed class SourceSelectorTests
     }
 
     [TestMethod]
-    public async Task Timeout10x_NoOkEver_SwitchesToDemo()
+    public async Task NoFixFor10s_SwitchesToDemo()
     {
+        FakeTimeProvider time = new();
         FakeLocationSource primary = new() { Fallback = LocationResult.Failed(LocationStatus.Timeout) };
-        SourceSelector s = new(primary, new FakeLocationSource(true) { Fallback = FakeLocationSource.Ok() }, new FakeTimeProvider());
+        SourceSelector s = new(primary, new FakeLocationSource(true) { Fallback = FakeLocationSource.Ok() }, time);
 
-        await Call(s, 9);
-        Assert.IsFalse(s.IsDemo);
         await Call(s, 1);
+        time.Advance(TimeSpan.FromSeconds(9));
+        await Call(s, 1);
+        Assert.IsFalse(s.IsDemo);
+
+        time.Advance(TimeSpan.FromSeconds(1));
+        await Call(s, 1);
+        Assert.IsTrue(s.IsDemo);
+    }
+
+    [TestMethod]
+    public async Task HangingPrimary_TimesOut_ThenDemo()
+    {
+        FakeTimeProvider time = new();
+        FakeLocationSource primary = new() { Hang = new() };
+        SourceSelector s = new(primary, new FakeLocationSource(true) { Fallback = FakeLocationSource.Ok() }, time);
+
+        Task<LocationResult> first = s.GetAsync(CancellationToken.None);
+        Assert.IsFalse(first.IsCompleted);
+        time.Advance(SourceSelector.PrimaryTimeout);
+        Assert.AreEqual(LocationStatus.Timeout, (await first).Status);
+
+        Task<LocationResult> second = s.GetAsync(CancellationToken.None);
+        time.Advance(SourceSelector.PrimaryTimeout);
+        LocationResult r = await second;
+
+        Assert.IsTrue(s.IsDemo);
+        Assert.AreEqual(LocationStatus.Ok, r.Status);
+    }
+
+    [TestMethod]
+    public async Task AutoDemo_RecoveryProbe_DoesNotBlock()
+    {
+        FakeTimeProvider time = new();
+        FakeLocationSource primary = new() { Fallback = LocationResult.Failed(LocationStatus.Denied) };
+        SourceSelector s = new(primary, new FakeLocationSource(true) { Fallback = FakeLocationSource.Ok() }, time);
+        await Call(s, 3);
+        Assert.IsTrue(s.IsDemo);
+
+        primary.Hang = new();
+        time.Advance(SourceSelector.RecoveryProbeInterval);
+        Task<LocationResult> during = s.GetAsync(CancellationToken.None);
+
+        Assert.IsTrue(during.IsCompleted, "demo keeps flowing while the real source is probed");
         Assert.IsTrue(s.IsDemo);
     }
 

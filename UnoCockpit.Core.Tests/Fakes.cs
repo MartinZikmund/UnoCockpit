@@ -12,12 +12,15 @@ internal sealed class FakeLocationSource(bool isDemo = false) : ILocationSource
 
     public int Calls { get; private set; }
 
+    /// <summary>When set, every call waits on this, like a permission prompt nobody answers.</summary>
+    public TaskCompletionSource<LocationResult>? Hang { get; set; }
+
     public bool IsDemo => isDemo;
 
     public Task<LocationResult> GetAsync(CancellationToken ct)
     {
         Calls++;
-        return Task.FromResult(Results.Count > 0 ? Results.Dequeue() : Fallback);
+        return Hang?.Task ?? Task.FromResult(Results.Count > 0 ? Results.Dequeue() : Fallback);
     }
 
     public static LocationResult Ok(double lat = 50, double lon = 14) =>
