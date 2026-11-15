@@ -39,7 +39,7 @@ public sealed class TripTracker
 
         double dt = (s.Timestamp - _previous.Timestamp).TotalSeconds;
         double stepM = GeoMath.DistanceMeters(_previous.Latitude, _previous.Longitude, s.Latitude, s.Longitude);
-        CurrentSpeedMps = s.SpeedMps ?? (dt > 0 ? stepM / dt : CurrentSpeedMps);
+        CurrentSpeedMps = s.SpeedMps ?? (dt > 0 ? stepM / dt : stepM < 1 ? 0 : CurrentSpeedMps);
         CurrentHeadingDeg = s.HeadingDeg ?? (stepM > 3
             ? GeoMath.BearingDeg(_previous.Latitude, _previous.Longitude, s.Latitude, s.Longitude)
             : CurrentHeadingDeg);
