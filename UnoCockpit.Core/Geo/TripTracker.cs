@@ -6,6 +6,7 @@ public sealed class TripTracker
     public const double MaxAccuracyForDistanceM = 50;
     public const double MovingSpeedMps = 1;
     public const int MaxBreadcrumbs = 2_000;
+    public const double StationaryAfterSeconds = 3;
 
     private readonly List<(double EastM, double NorthM)> _breadcrumbs = new();
     private GeoSample? _first;
@@ -37,25 +38,34 @@ public sealed class TripTracker
             return;
         }
 
-        double dt = (s.Timestamp - _previous.Timestamp).TotalSeconds;
         double stepM = GeoMath.DistanceMeters(_previous.Latitude, _previous.Longitude, s.Latitude, s.Longitude);
-        CurrentSpeedMps = s.SpeedMps ?? (dt > 0 ? stepM / dt : stepM < 1 ? 0 : CurrentSpeedMps);
         CurrentHeadingDeg = s.HeadingDeg ?? (stepM > 3
             ? GeoMath.BearingDeg(_previous.Latitude, _previous.Longitude, s.Latitude, s.Longitude)
             : CurrentHeadingDeg);
         Elapsed = s.Timestamp - _first.Timestamp;
         _previous = s;
 
-        if (s.AccuracyM > MaxAccuracyForDistanceM)
-        {
-            return;
-        }
-
         double dispM = GeoMath.DistanceMeters(_lastAccepted.Latitude, _lastAccepted.Longitude, s.Latitude, s.Longitude);
+        double sinceAcceptedS = (s.Timestamp - _lastAccepted.Timestamp).TotalSeconds;
+        bool accurate = s.AccuracyM <= MaxAccuracyForDistanceM;
         // With a reported speed, trust it; without one, require a jump bigger than two accuracy radii of jitter.
-        bool moved = s.SpeedMps is { } speed
+        bool moved = accurate && (s.SpeedMps is { } speed
             ? speed >= MovingSpeedMps
-            : dispM > Math.Max(2 * s.AccuracyM, 5);
+            : dispM > Math.Max(2 * s.AccuracyM, 5));
+
+        if (s.SpeedMps is { } reported)
+        {
+            CurrentSpeedMps = reported;
+        }
+        else if (moved && sinceAcceptedS > 0)
+        {
+            CurrentSpeedMps = dispM / sinceAcceptedS;
+        }
+        else if (CurrentSpeedMps is null || sinceAcceptedS >= StationaryAfterSeconds)
+        {
+            // Jitter around a parked car never clears the threshold above, so it settles to zero.
+            CurrentSpeedMps = 0;
+        }
 
         if (!moved)
         {
