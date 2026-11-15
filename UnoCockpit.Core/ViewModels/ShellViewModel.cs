@@ -129,9 +129,11 @@ public sealed partial class ShellViewModel : ObservableObject
         if (result is not { Status: LocationStatus.Ok, Sample: { } sample })
         {
             HasGpsFix = false;
-            if (!isDemo)
+            // With no location at all we can't tell if the car moves, so the apps stay usable.
+            // A transient timeout (a tunnel) keeps the last known state instead of unlocking mid-drive.
+            bool noLocation = result.Status is LocationStatus.Denied or LocationStatus.Unsupported || _lastFix is null;
+            if (!isDemo && noLocation)
             {
-                // Without location we can't tell if the car moves; treat it as parked so the apps stay usable.
                 _park.ForceState(ParkState.Parked);
             }
 
