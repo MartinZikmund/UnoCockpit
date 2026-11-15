@@ -489,6 +489,7 @@ $RECYCLE.BIN/
 # Single Target Config
 solution-config.props
 # Publish Profiles
-!**/Properties/PublishProfiles/*.pubxml.superpowers/
+!**/Properties/PublishProfiles/*.pubxml
+.superpowers/
 
 Directory.Build.local.props
