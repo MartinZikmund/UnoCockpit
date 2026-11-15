@@ -62,6 +62,9 @@ internal static partial class Interop
     [JSImport("globalThis.Cockpit.probeJson")]
     public static partial string ProbeJson();
 
+    [JSImport("globalThis.Cockpit.browserLanguage")]
+    public static partial string BrowserLanguage();
+
     [JSImport("globalThis.Cockpit.locationSearch")]
     public static partial string LocationSearch();
 }

@@ -31,6 +31,14 @@
     </UnoFeatures>
   </PropertyGroup>
 
+  <!-- Smaller download for the car: .NET's ICU isn't needed, all formatting is invariant.
+       IL trimming stays off: PublishTrimmed breaks Uno 7.0 startup (invalid vtable slot in WebAssemblyWindowWrapper). -->
+  <PropertyGroup Condition="$(TargetFramework.Contains('browserwasm')) and '$(Configuration)' == 'Release'">
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- Uno's generated App code sets ResourceLoader.DefaultLanguage, which creates a CultureInfo. -->
+    <PredefinedCulturesOnly>false</PredefinedCulturesOnly>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp' and $(TargetFramework.Contains('browserwasm'))">
     <EmbeddedResource Include="Platforms\WebAssembly\WasmScripts\cockpit.js" />
   </ItemGroup>

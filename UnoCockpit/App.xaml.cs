@@ -38,7 +38,7 @@ public partial class App : Application
             sources.Mic,
             sources.Probe,
             sources.Store,
-            Core.Formatting.UnitsFormatter.DefaultMetric(System.Globalization.RegionInfo.CurrentRegion));
+            Core.Formatting.UnitsFormatter.DefaultMetricForLanguage(OperatingSystem.IsBrowser() ? Sensors.Browser.Interop.BrowserLanguage() : System.Globalization.CultureInfo.CurrentCulture.Name));
 
         MainWindow.Content = new ShellPage(vm, sources);
         MainWindow.Activate();

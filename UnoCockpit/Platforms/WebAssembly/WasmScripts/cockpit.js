@@ -280,6 +280,10 @@ globalThis.Cockpit = (function () {
         });
     }
 
+    function browserLanguage() {
+        return navigator.language || "";
+    }
+
     function locationSearch() {
         return globalThis.location ? globalThis.location.search : "";
     }
@@ -303,6 +307,7 @@ globalThis.Cockpit = (function () {
         speechStart: speechStart,
         speechTake: speechTake,
         probeJson: probeJson,
+        browserLanguage: browserLanguage,
         locationSearch: locationSearch
     };
 })();
