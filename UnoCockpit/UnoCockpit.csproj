@@ -7,6 +7,7 @@
 
     <OutputType>Exe</OutputType>
     <UnoSingleProject>true</UnoSingleProject>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
     <!-- Display name -->
     <ApplicationTitle>Uno Cockpit</ApplicationTitle>
@@ -29,5 +30,9 @@
       Skia;
     </UnoFeatures>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp' and $(TargetFramework.Contains('browserwasm'))">
+    <EmbeddedResource Include="Platforms\WebAssembly\WasmScripts\cockpit.js" />
+  </ItemGroup>
 
 </Project>
