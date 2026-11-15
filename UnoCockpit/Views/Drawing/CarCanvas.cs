@@ -261,15 +261,16 @@ public sealed partial class CarCanvas : SKCanvasElement
             float x = side * hw * 0.62f;
             using SKPath cone = new();
             cone.MoveTo(x, -l * 0.47f);
-            cone.LineTo(x + side * w * 0.55f, -l * 0.47f - reach);
-            cone.LineTo(x - side * w * 0.25f, -l * 0.47f - reach);
+            cone.LineTo(x + side * w * 0.75f, -l * 0.47f - reach);
+            cone.LineTo(x - side * w * 0.35f, -l * 0.47f - reach);
             cone.Close();
             using SKPaint light = new()
             {
                 IsAntialias = true,
+                MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, w * 0.06f),
                 Shader = SKShader.CreateLinearGradient(
                     new SKPoint(0, -l * 0.47f), new SKPoint(0, -l * 0.47f - reach),
-                    [new SKColor(0xE8, 0xF0, 0xFF, (byte)(90 * _lights)), SKColors.Transparent],
+                    [new SKColor(0xE8, 0xF0, 0xFF, (byte)(70 * _lights)), SKColors.Transparent],
                     SKShaderTileMode.Clamp),
             };
             canvas.DrawPath(cone, light);
