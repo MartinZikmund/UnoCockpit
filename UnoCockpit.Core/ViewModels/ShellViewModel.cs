@@ -115,6 +115,19 @@ public sealed partial class ShellViewModel : ObservableObject
 
     partial void OnThemeOverrideDarkChanged(bool? value) => UpdateTheme();
 
+    // Leaving an app releases its camera or microphone; nothing keeps listening off-screen.
+    partial void OnActiveAppChanged(AppId oldValue, AppId newValue)
+    {
+        if (oldValue == AppId.Photo)
+        {
+            Photo.StopCommand.Execute(null);
+        }
+        else if (oldValue == AppId.Sound)
+        {
+            Sound.StopCommand.Execute(null);
+        }
+    }
+
     [RelayCommand]
     private void OpenApp(AppId app) => ActiveApp = app;
 
