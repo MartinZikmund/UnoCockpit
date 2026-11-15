@@ -1,7 +1,61 @@
 <UserControl x:Class="UnoCockpit.Views.Apps.CabinSoundView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Border Style="{StaticResource CockpitCardStyle}">
-    <TextBlock Style="{StaticResource CockpitBodyStyle}" Text="CabinSoundView" />
-  </Border>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:apps="using:UnoCockpit.Views.Apps"
+             xmlns:drawing="using:UnoCockpit.Views.Drawing">
+  <Grid>
+    <!-- Listening -->
+    <Grid ColumnSpacing="16" RowSpacing="16" Visibility="{x:Bind apps:CabinSoundView.Show(ViewModel.IsListening), Mode=OneWay}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Border Style="{StaticResource CockpitCardStyle}">
+        <Grid>
+          <StackPanel>
+            <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="Cabin level" />
+            <TextBlock AutomationProperties.AutomationId="SoundLevel" Style="{StaticResource CockpitLargeNumberStyle}" Text="{x:Bind apps:CabinSoundView.Score(ViewModel.PeakDb), Mode=OneWay}" />
+            <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind apps:CabinSoundView.Db(ViewModel.LevelDb), Mode=OneWay}" />
+          </StackPanel>
+          <Button HorizontalAlignment="Right" VerticalAlignment="Top" AutomationProperties.AutomationId="SoundStop" Command="{x:Bind ViewModel.StopCommand}" Content="Stop" Style="{StaticResource CockpitPillButtonStyle}" />
+        </Grid>
+      </Border>
+
+      <Border Grid.Column="1" Style="{StaticResource CockpitCardStyle}">
+        <StackPanel Spacing="8">
+          <TextBlock Style="{StaticResource CockpitLabelStyle}" Text="Clap-o-meter" />
+          <TextBlock Style="{StaticResource CockpitBodyStyle}" Text="Make the cabin as loud as you can for 5 seconds." />
+          <ProgressBar Height="8" Margin="0,8" Maximum="1" Value="{x:Bind ViewModel.ChallengeProgress, Mode=OneWay}" />
+          <StackPanel Orientation="Horizontal" Spacing="16">
+            <Button AutomationProperties.AutomationId="SoundChallenge"
+                    Command="{x:Bind ViewModel.StartChallengeCommand}"
+                    Content="Go!"
+                    IsEnabled="{x:Bind apps:CabinSoundView.Not(ViewModel.IsChallengeRunning), Mode=OneWay}"
+                    Style="{StaticResource CockpitAccentPillButtonStyle}" />
+            <TextBlock VerticalAlignment="Center" Style="{StaticResource CockpitValueStyle}" Text="{x:Bind apps:CabinSoundView.Score(ViewModel.ChallengeScoreDb), Mode=OneWay}" />
+            <TextBlock VerticalAlignment="Center" Style="{StaticResource CockpitLabelStyle}" Text="{x:Bind apps:CabinSoundView.Best(ViewModel.BestScoreDb), Mode=OneWay}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource CockpitCardStyle}">
+        <drawing:SpectrumCanvas x:Name="Spectrum" />
+      </Border>
+    </Grid>
+
+    <!-- Idle / unavailable -->
+    <Border Style="{StaticResource CockpitCardStyle}" Visibility="{x:Bind apps:CabinSoundView.Hide(ViewModel.IsListening), Mode=OneWay}">
+      <StackPanel MaxWidth="520" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+        <FontIcon HorizontalAlignment="Center" FontSize="64" Foreground="{ThemeResource CockpitTextPrimaryBrush}" Glyph="&#xE8D6;" />
+        <TextBlock HorizontalAlignment="Center" Style="{StaticResource CockpitTitleStyle}" Text="How loud is your cabin?" />
+        <TextBlock HorizontalAlignment="Center" HorizontalTextAlignment="Center" Style="{StaticResource CockpitBodyStyle}" Text="{x:Bind apps:CabinSoundView.StatusText(ViewModel.Status), Mode=OneWay}" />
+        <Button Margin="0,8,0,0" HorizontalAlignment="Center" AutomationProperties.AutomationId="SoundStart" Command="{x:Bind ViewModel.StartCommand}" Content="Start listening" Style="{StaticResource CockpitAccentPillButtonStyle}" />
+      </StackPanel>
+    </Border>
+  </Grid>
 </UserControl>

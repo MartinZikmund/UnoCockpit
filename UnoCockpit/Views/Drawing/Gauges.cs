@@ -221,3 +221,62 @@ public sealed partial class BreadcrumbCanvas : ThemedCanvas
         canvas.Restore();
     }
 }
+
+/// <summary>A mirrored bar spectrum with falling peak caps, fed 32 bands in [0, 1].</summary>
+public sealed partial class SpectrumCanvas : ThemedCanvas
+{
+    private const float PeakFallPerSecond = 1.5f;
+
+    private readonly float[] _peaks = new float[32];
+    private readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
+    private float[] _bands = new float[32];
+    private TimeSpan _last;
+
+    public void Update(float[] bands)
+    {
+        _bands = bands;
+        Invalidate();
+    }
+
+    protected override void RenderOverride(SKCanvas canvas, Size area)
+    {
+        float w = (float)area.Width;
+        float h = (float)area.Height;
+        TimeSpan now = _clock.Elapsed;
+        float dt = (float)Math.Min(0.1, (now - _last).TotalSeconds);
+        _last = now;
+
+        int n = _bands.Length;
+        float slot = w / n;
+        float bar = slot * 0.6f;
+        float mid = h / 2;
+
+        using SKPaint baseline = Stroke(Faint, 2);
+        canvas.DrawLine(0, mid, w, mid, baseline);
+
+        using SKPaint fill = new()
+        {
+            IsAntialias = true,
+            Shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(0, h), [Warning, Accent, Warning], [0f, 0.5f, 1f], SKShaderTileMode.Clamp),
+        };
+        using SKPaint cap = Fill(Primary);
+
+        for (int i = 0; i < n; i++)
+        {
+            float v = Math.Clamp(_bands[i], 0, 1);
+            _peaks[i] = Math.Max(v, _peaks[i] - PeakFallPerSecond * dt);
+            float x = i * slot + (slot - bar) / 2;
+            float half = Math.Max(2, v * (mid - 8));
+            canvas.DrawRoundRect(new SKRect(x, mid - half, x + bar, mid + half), bar / 2, bar / 2, fill);
+
+            if (_peaks[i] < 0.03f)
+            {
+                continue;
+            }
+
+            float peak = _peaks[i] * (mid - 8);
+            canvas.DrawRoundRect(new SKRect(x, mid - peak - 6, x + bar, mid - peak - 2), 2, 2, cap);
+            canvas.DrawRoundRect(new SKRect(x, mid + peak + 2, x + bar, mid + peak + 6), 2, 2, cap);
+        }
+    }
+}
