@@ -25,6 +25,16 @@ public sealed class TripTrackerTests
     }
 
     [TestMethod]
+    public void RepeatedCachedFix_NullSpeed_IsZero()
+    {
+        TripTracker t = new();
+        t.Add(Fix(0, 0));
+        t.Add(Fix(0, 0));
+
+        Assert.AreEqual(0, t.CurrentSpeedMps);
+    }
+
+    [TestMethod]
     public void ParkedJitter_DoesNotAccumulate()
     {
         TripTracker t = new();
