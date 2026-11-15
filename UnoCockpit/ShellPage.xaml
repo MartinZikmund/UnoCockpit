@@ -1,17 +1,12 @@
-﻿<Page x:Class="UnoCockpit.ShellPage"
+<Page x:Class="UnoCockpit.ShellPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:local="using:UnoCockpit"
-      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-  <ScrollViewer IsTabStop="True">
-    <Grid>
-      <StackPanel
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center">
-        <TextBlock AutomationProperties.AutomationId="HelloTextBlock"
-          Text="Hello Uno Platform!"
-          HorizontalAlignment="Center" />
-      </StackPanel>
-    </Grid>
-  </ScrollViewer>
+      Background="#111214"
+      RequestedTheme="Dark">
+  <StackPanel Padding="24" Spacing="8">
+    <TextBlock x:Name="DebugSpeed" AutomationProperties.AutomationId="DebugSpeed" FontSize="48" Text="{x:Bind ViewModel.Trip.SpeedText, Mode=OneWay}" />
+    <TextBlock AutomationProperties.AutomationId="DebugDemo" Text="{x:Bind ViewModel.IsDemo, Mode=OneWay}" />
+    <TextBlock Text="{x:Bind ViewModel.ParkState, Mode=OneWay}" />
+    <TextBlock Text="{x:Bind ViewModel.ClockText, Mode=OneWay}" />
+  </StackPanel>
 </Page>
