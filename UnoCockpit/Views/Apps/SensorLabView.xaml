@@ -1,7 +1,63 @@
 <UserControl x:Class="UnoCockpit.Views.Apps.SensorLabView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Border Style="{StaticResource CockpitCardStyle}">
-    <TextBlock Style="{StaticResource CockpitBodyStyle}" Text="SensorLabView" />
-  </Border>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:apps="using:UnoCockpit.Views.Apps"
+             xmlns:sensors="using:UnoCockpit.Core.Sensors">
+  <Grid RowSpacing="16">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <Grid ColumnSpacing="12">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <TextBlock VerticalAlignment="Center" Style="{StaticResource CockpitBodyStyle}" Text="Everything this browser exposes, live. Share a copy when you report how the app runs in your car." />
+      <Button Grid.Column="1" AutomationProperties.AutomationId="LabRefresh" Command="{x:Bind ViewModel.RefreshCommand}" Content="Refresh" Style="{StaticResource CockpitPillButtonStyle}" />
+      <Button x:Name="CopyButton" Grid.Column="2" AutomationProperties.AutomationId="LabCopy" Click="OnCopy" Content="Copy report" Style="{StaticResource CockpitPillButtonStyle}" />
+    </Grid>
+
+    <ScrollViewer Grid.Row="1">
+      <ItemsRepeater ItemsSource="{x:Bind ViewModel.Reports, Mode=OneWay}">
+        <ItemsRepeater.Layout>
+          <UniformGridLayout ItemsStretch="Fill" MinColumnSpacing="16" MinItemWidth="380" MinRowSpacing="16" />
+        </ItemsRepeater.Layout>
+        <ItemsRepeater.ItemTemplate>
+          <DataTemplate x:DataType="sensors:CapabilityReport">
+            <Border Padding="20,16" Style="{StaticResource CockpitCardStyle}">
+              <Grid ColumnSpacing="12" RowSpacing="6">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock FontSize="18" FontWeight="SemiBold" Style="{StaticResource CockpitTextStyle}" Text="{x:Bind Name}" />
+                <Grid Grid.Column="1">
+                  <Border Padding="12,4" Background="{ThemeResource CockpitAvailableBrush}" CornerRadius="12" Visibility="{x:Bind apps:SensorLabView.Is(Status, 'Available')}">
+                    <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="White" Text="Available" />
+                  </Border>
+                  <Border Padding="12,4" Background="{ThemeResource CockpitAccentBrush}" CornerRadius="12" Visibility="{x:Bind apps:SensorLabView.Is(Status, 'Active')}">
+                    <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="White" Text="Active" />
+                  </Border>
+                  <Border Padding="12,4" Background="{ThemeResource CockpitWarningBrush}" CornerRadius="12" Visibility="{x:Bind apps:SensorLabView.IsBlocked(Status)}">
+                    <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="White" Text="{x:Bind apps:SensorLabView.BlockedText(Status)}" />
+                  </Border>
+                  <Border Padding="12,4" Background="{ThemeResource CockpitCardStrokeBrush}" CornerRadius="12" Visibility="{x:Bind apps:SensorLabView.Is(Status, 'Unsupported')}">
+                    <TextBlock FontSize="13" FontWeight="SemiBold" Style="{StaticResource CockpitTextStyle}" Text="Not available" />
+                  </Border>
+                </Grid>
+                <TextBlock Grid.Row="1" Grid.ColumnSpan="2" FontSize="14" Style="{StaticResource CockpitBodyStyle}" Text="{x:Bind Detail}" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsRepeater.ItemTemplate>
+      </ItemsRepeater>
+    </ScrollViewer>
+  </Grid>
 </UserControl>

@@ -10,6 +10,8 @@ public static partial class BrowserJson
 {
     public const string CameraRequirement = "Needs a parked car with the AMD Ryzen computer on software 2026.26 or newer";
 
+    private const string CameraRequirementShort = "Parked · AMD Ryzen · software 2026.26+";
+
     public static LocationResult ParseLocation(string json)
     {
         try
@@ -65,8 +67,8 @@ public static partial class BrowserJson
             new("vehicle", "Vehicle", VehicleStatus(userAgent), VehicleDetail(userAgent, webgl)),
             Flag(p, "geolocation", "Location (GPS)", "Speed, heading, altitude and trip", "Browser has no geolocation"),
             Flag(p, "gamepad", "Gamepad", "Plug in a USB controller and press a button", "Browser has no Gamepad API"),
-            Flag(p, "mediaDevices", "camera", "Camera", CameraRequirement, CameraRequirement),
-            Flag(p, "mediaDevices", "microphone", "Microphone", CameraRequirement, CameraRequirement),
+            Flag(p, "mediaDevices", "camera", "Camera", CameraRequirementShort, CameraRequirementShort),
+            Flag(p, "mediaDevices", "microphone", "Microphone", CameraRequirementShort, CameraRequirementShort),
             Flag(p, "deviceMotion", "motion", "Motion sensors", "Waiting for motion data", "No accelerometer exposed; G-forces come from GPS"),
             Flag(p, "speech", "speech", "Voice commands", "Say \"open arcade\"", "No speech recognition in this browser"),
             new("network", "Network", Bool(p, "online") ? CapabilityStatus.Available : CapabilityStatus.Unsupported,
