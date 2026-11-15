@@ -132,7 +132,8 @@ public sealed partial class ShellViewModel : ObservableObject
         _lastFix = sample;
         _tracker.Add(sample);
         double? speed = _tracker.CurrentSpeedMps;
-        _park.Update(sample.Timestamp, speed);
+        // Wall clock, not the fix timestamp: browsers can hand back the same cached fix with a stale timestamp.
+        _park.Update(_now, speed);
         GForce g = _g.Add(sample.Timestamp, speed ?? 0, _tracker.CurrentHeadingDeg);
         Trip.Refresh(_tracker, g);
         UpdateTheme();
