@@ -67,6 +67,20 @@ public sealed class ShellViewModelTests
     }
 
     [TestMethod]
+    public void SwitchingDemoToRealGps_StartsNewTrip()
+    {
+        ShellViewModel vm = Create();
+        for (int i = 0; i < 10; i++)
+        {
+            vm.OnLocation(Fix(T0.AddSeconds(i), 20, 37.7694 + i * 0.0002, -122.4862), isDemo: true);
+        }
+
+        vm.OnLocation(Fix(T0.AddSeconds(30), 0), isDemo: false);
+
+        Assert.AreEqual("0 m", vm.Trip.DistanceText);
+    }
+
+    [TestMethod]
     public void TripHud_NeverLocked()
     {
         ShellViewModel vm = Create();

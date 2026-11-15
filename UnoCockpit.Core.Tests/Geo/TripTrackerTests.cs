@@ -101,6 +101,17 @@ public sealed class TripTrackerTests
     }
 
     [TestMethod]
+    public void ImpossibleJump_StartsNewTrip()
+    {
+        TripTracker t = new();
+        t.Add(Fix(0, 0, speed: 0));
+        t.Add(Fix(1, 520, speed: 10));
+
+        Assert.AreEqual(0, t.DistanceM);
+        Assert.HasCount(1, t.Breadcrumbs);
+    }
+
+    [TestMethod]
     public void Breadcrumbs_AreLocalMetres()
     {
         TripTracker t = new();
